@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "nordvpn.fullname" . }}
+  labels:
+    {{- include "nordvpn.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      {{- include "nordvpn.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "nordvpn.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image }}"
+          imagePullPolicy: IfNotPresent
+          securityContext:
+            capabilities:
+              add:
+                - NET_ADMIN
+          ports:
+            - name: pac
+              containerPort: 8080
+              protocol: TCP
+            - name: proxy
+              containerPort: 8081
+              protocol: TCP
+          env:
+            - name: NORDVPN_USERNAME
+              value: {{ .Values.app.user }}
+            - name: NORDVPN_PASSWORD
+              value: {{ .Values.app.pass }}
+            - name: NORDVPN_IP
+              value: {{ .Values.app.ip }}
+            - name: NORDVPN_HOSTNAME
+              value: {{ .Values.app.hostname }}
+            - name: NORDVPN_EXT_ADDR
+              value: {{ .Values.app.host_ip }}:{{ .Values.service.proxy }}

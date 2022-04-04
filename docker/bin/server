@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+
+# ipsec.secrets
+cat /nordvpn/conf/ipsec.secrets.tpl | \
+  sed "s/USERNAME/$NORDVPN_USERNAME/g" | \
+  sed "s/PASSWORD/$NORDVPN_PASSWORD/g" > /etc/ipsec.secrets
+echo "/etc/ipsec.secrets Generated"
+
+# ipsec.conf.tpl
+cat /nordvpn/conf/ipsec.conf.tpl | \
+  sed "s/USERNAME/$NORDVPN_USERNAME/g" | \
+  sed "s/SERVER_IP/$NORDVPN_IP/g" | \
+  sed "s/SERVER_HOSTNAME/$NORDVPN_HOSTNAME/g" > /etc/ipsec.conf
+echo "/etc/ipsec.conf Generated"
+
+# constraints.conf.tpl
+cp /nordvpn/conf/constraints.conf.tpl /etc/strongswan.d/charon/constraints.conf
+echo "/etc/strongswan.d/charon/constraints.conf Generated"
+
+# tinyproxy.conf.tpl
+cp /nordvpn/conf/tinyproxy.conf.tpl /etc/tinyproxy/tinyproxy.conf
+echo "/etc/tinyproxy/tinyproxy.conf Generated"
+
+# nginx-default.conf.tpl
+cp /nordvpn/conf/nginx-default.conf.tpl /etc/nginx/sites-enabled/default
+echo "/etc/nginx/sites-enabled/default Generated"
+
+ipsec restart || exit 1
+echo "ipsec Started"
+
+sleep 5
+
+ipsec up NordVPN || exit 1
+echo "nordvpn Selected"
+
+tinyproxy || exit 1
+echo "tinyproxy Started"
+
+nginx || exit 1
+echo "nginx Started"
+
+cat /nordvpn/conf/whitelist.pac.tpl | \
+  sed "s/SOCKS5 127.0.0.1:1080; SOCKS 127.0.0.1:1080;/PROXY $NORDVPN_EXT_ADDR/g" > /var/www/html/whitelist.pac
+
+bash -c "trap : TERM INT; sleep infinity & wait"

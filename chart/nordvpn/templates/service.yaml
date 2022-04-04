@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "nordvpn.fullname" . }}
+  labels:
+    {{- include "nordvpn.labels" . | nindent 4 }}
+spec:
+  type: NodePort
+  ports:
+    - targetPort: pac
+      protocol: TCP
+      name: pac
+      nodePort: {{ .Values.service.pac }}
+      port: 8080
+    - targetPort: proxy
+      protocol: TCP
+      name: proxy
+      nodePort: {{ .Values.service.proxy }}
+      port: 8081
+  selector:
+    {{- include "nordvpn.selectorLabels" . | nindent 4 }}

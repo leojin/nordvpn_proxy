@@ -1,0 +1,16 @@
+User tinyproxy
+Group tinyproxy
+Port 8081
+Listen 0.0.0.0
+Timeout 600
+DefaultErrorFile "/usr/share/tinyproxy/default.html"
+StatFile "/usr/share/tinyproxy/stats.html"
+Logfile "/var/log/tinyproxy/tinyproxy.log"
+LogLevel Info
+PidFile "/run/tinyproxy/tinyproxy.pid"
+MaxClients 500
+MinSpareServers 50
+MaxSpareServers 100
+StartServers 50
+MaxRequestsPerChild 0
+ViaProxyName "tinyproxy"

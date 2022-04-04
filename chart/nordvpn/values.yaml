@@ -1,0 +1,30 @@
+# Default values for nordvpn.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image: "nordvpn-proxy:1.0"
+nameOverride: ""
+fullnameOverride: ""
+
+service:
+  # To offer pac file
+  pac: 30100
+  # To offer proxy service
+  proxy: 30101
+
+app:
+  # https://my.ndaccount.com/dashboard/nordvpn/
+  #   Advanced configuration
+  #     Service credentials (manual setup)
+  user: ""
+  pass: ""
+
+  # https://10.eunanodemos.com/Restricted-countries/1391707752/Connecting-from-countries-with-internet-restrictions-on-macOS.htm
+  #   9. The settings for the new VPN connection will now be displayed.
+  ip: ""
+  hostname: ""
+
+  # Your machine's ip, which will be used as the proxy ip
+  host_ip: "127.0.0.1"
